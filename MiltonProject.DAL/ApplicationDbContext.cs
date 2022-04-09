@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using MiltonProject.DAL.Models;
 
 namespace MiltonProject.DAL
 {
@@ -11,6 +12,9 @@ namespace MiltonProject.DAL
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
+
         }
+        public virtual DbSet<User> User { get; set; }
+        public virtual DbSet<UserDetails> UserDetails { get; set; }
     }
 }

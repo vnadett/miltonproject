@@ -6,8 +6,9 @@
     </div>
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+        <div class="top-row" style="top: 0; right: 0; position: relative; background-color: none">
+            <MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme" />
+            <MudSwitch @bind-Checked="@_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Light/Dark Mode" />
         </div>
 
         <article class="content px-4">
@@ -15,6 +16,9 @@
         </article>
     </main>
 </div>
-<MudThemeProvider/>
-<MudDialogProvider/>
-<MudSnackbarProvider/>
+<MudDialogProvider />
+<MudSnackbarProvider />
+@code {
+    private MudTheme _theme = new();
+    private bool _isDarkMode;
+}

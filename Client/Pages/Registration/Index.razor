@@ -1,0 +1,122 @@
+﻿@using miltonProject.Client.Models
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using miltonProject.Client.Interfaces
+@inject IRegistrationRepository _regRepo
+
+@page "/registration"
+<div class="row">
+    <MudPaper style="padding: 20px; margin: 10px;
+    text-align: center">
+        <h2>
+            Felhasználó regisztrálása
+        </h2>
+    </MudPaper>
+</div>
+<div class="row">
+    <div class="col-md-12" style="align-content:center;">
+        <MudPaper style=" padding: 10px; margin: 10px; padding-bottom:10px;
+                  text-align: center">
+            <MudForm Model="reg">
+                <div class="row">
+
+                    <div class="col-md-9">
+                        <MudTextField T="string" Label="Felhasználónév" @bind-Value="reg.UserName" Required="true" RequiredError="Felhasználónév megadása kötelező!" />
+                        <MudTextField T="string" Label="Email" @bind-Value="reg.Email" Required="true" RequiredError="Email kötelező!"
+                                      Validation="@(new EmailAddressAttribute() {ErrorMessage = "The email address is invalid"})" />
+                        <MudTextField T="string" Label="Password" HelperText="Choose a strong password" @bind-Value="reg.Password"
+                                      InputType="InputType.Password" Required="true"
+                                      RequiredError="Password is required!" />
+                        <MudTextField T="string" Label="Password" HelperText="Choose a strong password" @bind-Value="reg.ConfirmPassword"
+                                      InputType="InputType.Password" Required="true"
+                                      RequiredError="Password is required!" />
+                        <MudSelect T="int" @bind-Value="reg.Role" Label="Jogosultság" AnchorOrigin="Origin.BottomCenter">
+                            @foreach (var item in roles)
+                            {
+                                <MudSelectItem Value="@item.Id">@item.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                    </div>
+                    <div class="col-md-3">
+                        <MudButton OnClick="GeneratePassword" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Password" Color="Color.Primary" Style="margin: 10px">Jelszó generálása</MudButton>
+                        <MudButton OnClick="AddUser" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Style="background-color: green; color: white; margin: 10px">
+                            Felhasználó hozzáadása
+                        </MudButton>
+                    </div>
+
+                </div>
+            </MudForm>
+        </MudPaper>
+    </div>
+
+</div>
+
+@if (showAlert)
+{
+    <MudAlert Severity="Severity.Success" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(false))">Felhasználó sikeresen hozzáadva!</MudAlert>
+}
+@if (showAlert)
+{
+    <MudAlert Severity="Severity.Error" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(false))">Felhasználó hozzáadása sikertelen!</MudAlert>
+}
+@code {
+    Registration reg = new();
+    MudForm form;
+    string[] errors = { };
+    bool success;
+    private bool showAlert = false;
+    bool failedAlert = false;
+
+    List<Role> roles = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        reg = new();
+        roles.Add(new Role
+            {
+                Id = 0,
+                Name = "Rendszergazda"
+            });
+        roles.Add(new Role
+            {
+                Id = 1,
+                Name = "Felhasználó"
+            });
+        roles.Add(new Role
+            {
+                Id = 2,
+                Name = "Adminisztrátor"
+            });
+    }
+    void GeneratePassword()
+    {
+        string rndPass = "";
+        Random rnd = new();
+        string chars = "$%#@!*abcdefghijklmnopqrstuvwxyz1234567890?;:ABCDEFGHIJKLMNOPQRSTUVWXYZ^&";
+        for (var i = 0; i < 8; i++)
+        {
+            int num = rnd.Next(0, chars.Length);
+            rndPass += chars[num];
+        }
+        reg.Password = rndPass;
+        reg.ConfirmPassword = rndPass;
+    }
+    async Task AddUser()
+    {
+        bool success = await _regRepo.Create(reg);
+        if (success)
+        {
+            showAlert = true;
+        }
+        else failedAlert = true;
+    }
+    private void CloseMe(bool value)
+    {
+        if (value)
+        {
+            showAlert = false;
+            failedAlert = false;
+        }
+    }
+}

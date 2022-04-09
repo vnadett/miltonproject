@@ -7,12 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MiltonProject.DAL.Models
+namespace MiltonProject.DAL.DTOs
 {
-    public class User
+    public class Registration
     {
-        [Key]
-        public int Id { get; set; }
         [Required]
         [MaxLength(50)]
         [DataType(DataType.EmailAddress, ErrorMessage = "Az email cím nem megfelelő!")]
@@ -33,6 +31,8 @@ namespace MiltonProject.DAL.Models
         [DataType(DataType.Password)]
         [System.ComponentModel.DataAnnotations.Compare("Password")]
         public string ConfirmPassword { get; set; }
+        public string? Error { get; set; }
+        public bool Success { get; set; }
         public int Role { get; set; }
     }
 }

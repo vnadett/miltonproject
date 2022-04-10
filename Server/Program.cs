@@ -5,14 +5,26 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MiltonProject.DAL.Interfaces;
 using MiltonProject.DAL.Services;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
-
+string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+builder.Services.AddHttpClient();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      builder =>
+                      {
+                          builder.WithOrigins("http://localhost:5135",
+                                              "https://localhost:7135");
+                      });
+});
+
 builder.Services.AddScoped<IRegistrationService, RegistrationService>();
 
 var app = builder.Build();
@@ -37,8 +49,13 @@ app.UseStaticFiles();
 app.UseRouting();
 
 
+app.UseCors(MyAllowSpecificOrigins);
+
 app.MapRazorPages();
 app.MapControllers();
 app.MapFallbackToFile("index.html");
 
 app.Run();
+
+
+app.UseMvc();

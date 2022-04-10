@@ -1,12 +1,12 @@
 ﻿@inherits LayoutComponentBase
 
 <div class="page">
-    <div class="sidebar">
+    <div class="sidebar" style="background-image: none; background-color: rgba(0,0,0,0.4)">
         <NavMenu />
     </div>
 
     <main>
-        <div class="top-row" style="top: 0; right: 0; position: relative; background-color: none">
+        <div class="top-row" style="top: 0; right: 0; position: relative;  background-color: rgba(0,0,0,0.1);background-image: none;">
             <MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme" />
             <MudSwitch @bind-Checked="@_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Light/Dark Mode" />
         </div>
@@ -20,5 +20,5 @@
 <MudSnackbarProvider />
 @code {
     private MudTheme _theme = new();
-    private bool _isDarkMode;
+    private bool _isDarkMode = true;
 }

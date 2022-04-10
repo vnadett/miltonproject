@@ -19,8 +19,8 @@
                   text-align: center">
             <MudForm Model="reg">
                 <div class="row">
-
-                    <div class="col-md-9">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-6" align="center" style="padding: 30px;">
                         <MudTextField T="string" Label="Felhasználónév" @bind-Value="reg.UserName" Required="true" RequiredError="Felhasználónév megadása kötelező!" />
                         <MudTextField T="string" Label="Email" @bind-Value="reg.Email" Required="true" RequiredError="Email kötelező!"
                                       Validation="@(new EmailAddressAttribute() {ErrorMessage = "The email address is invalid"})" />
@@ -30,21 +30,21 @@
                         <MudTextField T="string" Label="Password" HelperText="Choose a strong password" @bind-Value="reg.ConfirmPassword"
                                       InputType="InputType.Password" Required="true"
                                       RequiredError="Password is required!" />
-                        <MudSelect T="int" @bind-Value="reg.Role" Label="Jogosultság" AnchorOrigin="Origin.BottomCenter">
+                        <MudSelect T="int" @bind-Value="reg.Role" Label="Jogosultság" Dense="true" Variant="Variant.Text">
                             @foreach (var item in roles)
                             {
                                 <MudSelectItem Value="@item.Id">@item.Name</MudSelectItem>
                             }
                         </MudSelect>
-
                     </div>
-                    <div class="col-md-3">
+                </div>
+                <div class=row>
+                    <div class="col-md-12">
                         <MudButton OnClick="GeneratePassword" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Password" Color="Color.Primary" Style="margin: 10px">Jelszó generálása</MudButton>
                         <MudButton OnClick="AddUser" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Style="background-color: green; color: white; margin: 10px">
                             Felhasználó hozzáadása
                         </MudButton>
                     </div>
-
                 </div>
             </MudForm>
         </MudPaper>
@@ -72,7 +72,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        reg = new();
+
         roles.Add(new Role
             {
                 Id = 0,

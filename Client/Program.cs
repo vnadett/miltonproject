@@ -5,6 +5,7 @@ using MudBlazor.Services;
 using miltonProject.Client.Services;
 using miltonProject.Client.Interfaces;
 
+
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
@@ -14,3 +15,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddScoped<IRegistrationRepository, RegistrationRepository>();
 
 await builder.Build().RunAsync();
+
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:5135") });
+
+

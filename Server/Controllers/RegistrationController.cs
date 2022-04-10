@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MiltonProject.DAL.Interfaces;
 using MiltonProject.DAL.DTOs;
+using System.Web.Http.Cors;
 
 namespace miltonProject.Server.Controllers
 {

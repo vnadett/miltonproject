@@ -1,0 +1,83 @@
+﻿@using miltonProject.Client.Models
+@using miltonProject.Client.Interfaces
+@inject IUserDetailRepository _userRepo
+@inject Blazored.SessionStorage.ISessionStorageService _storage
+
+@page "/userpage"
+
+<style>
+    html, body {
+        background-image: url(https://uni-milton.hu/wp-content/uploads/2021/07/KR_20210723_0086-scaled.jpg);
+        background-size: cover;
+        background-repeat: no-repeat;
+        height: 100%;
+    }
+
+    .login {
+        padding-top: 10%;
+    }
+</style>
+<div class="row login">
+    <div class="col-md-3"></div>
+    <div class="col-md-6 pad">
+        <MudPaper style="opacity: 0.8 ;padding: 30px;">
+            <h3>Felhasználói adatlap</h3>
+            <MudForm Model=userDetail>
+                <div class="row">
+                    <MudTextField T=string Label="Keresztnév" @bind-Value="userDetail.FirstName" Required="true" RequiredError="Keresztnév megadása kötelező!" Variant="Variant.Filled"></MudTextField>
+                    <MudTextField T=string Label="Vezetéknév" @bind-Value="userDetail.LastName" Required="true" RequiredError="Vezetéknév megadása kötelező!" Variant="Variant.Filled"></MudTextField>
+
+                    <MudCheckBox @bind-Checked="@userDetail.IsActive" Color="Color.Primary">Aktív félév</MudCheckBox>
+
+                    <MudCheckBox @bind-Checked="@userDetail.IsBilling" Color="Color.Primary">Számlás</MudCheckBox>
+                </div>
+                <div class="row" style="margin-top: 20px;">
+                    <MudButton Variant="Variant.Filled" IconColor="Color.Secondary" Size="Size.Large" Color="Color.Info" OnClick="SendData" StartIcon="@Icons.Material.Filled.Login">Feltöltés</MudButton>
+                </div>
+            </MudForm>
+        </MudPaper>
+    </div>
+</div>
+@if (showAlert)
+{
+    <MudAlert Severity="Severity.Success" Variant="Variant.Filled" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(false))">Felhasználó sikeresen hozzáadva!</MudAlert>
+}
+@if (failedAlert)
+{
+    <MudAlert Severity="Severity.Error" Variant="Variant.Filled" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(false))">Felhasználó hozzáadása sikertelen!</MudAlert>
+}
+@code {
+    Details userDetail = new();
+
+    private bool showAlert = false;
+    bool failedAlert = false;
+
+    async Task SendData()
+    {
+        var success = await _userRepo.Create(userDetail, await _storage.GetItemAsync<int>("id"));
+        if (success)
+        {
+            showAlert = true;
+        }
+        else
+        {
+
+            failedAlert = true;
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        userDetail = await _userRepo.Get(await _storage.GetItemAsync<int>("id"));
+        if (userDetail == null)
+        {
+            userDetail = new();
+        }
+
+    }
+    private void CloseMe(bool value)
+    {
+        showAlert = false;
+        failedAlert = false;
+
+    }
+}

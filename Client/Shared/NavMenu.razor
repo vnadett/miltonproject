@@ -62,5 +62,6 @@
         await _storage.RemoveItemAsync("username");
         await _storage.RemoveItemAsync("id");
         await _storage.RemoveItemAsync("role");
+        _nav.NavigateTo("", forceLoad: true);
     }
 }

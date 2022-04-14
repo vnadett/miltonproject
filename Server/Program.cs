@@ -31,6 +31,8 @@ builder.Services.AddCors(options =>
 builder.Services.AddMvc();
 builder.Services.AddScoped<IRegistrationService, RegistrationService>();
 builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddScoped<IUserDetailService, UserDetailService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
 

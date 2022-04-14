@@ -61,7 +61,7 @@
             await _storage.SetItemAsync("username", getLoggedUser.UserName);
             await _storage.SetItemAsync("success", getLoggedUser.Success);
             await _storage.SetItemAsync("role", getLoggedUser.Role);
-            _nav.NavigateTo("/userpage");
+            _nav.NavigateTo("/userpage", forceLoad: true);
         }
         else
         {

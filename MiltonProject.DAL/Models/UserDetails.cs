@@ -22,5 +22,6 @@ namespace MiltonProject.DAL.Models
         public string LastName { get; set; }
         public int UserId { get; set; }
         public bool IsBilling { get; set; }
+        public bool IsActive { get; set; }
     }
 }

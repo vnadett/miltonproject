@@ -5,8 +5,17 @@
 @inject IRegistrationRepository _regRepo
 
 @page "/registration"
+
+<style>
+    html, body {
+        background-image: url(https://uni-milton.hu/wp-content/uploads/2021/07/KR_20210723_0086-scaled.jpg);
+        background-size: cover;
+        background-repeat: no-repeat;
+        height: 100%;
+    }</style>
+
 <div class="row">
-    <MudPaper style="padding: 20px; margin: 10px;
+    <MudPaper style="padding: 20px; margin: 10px; opacity: 0.8;
     text-align: center">
         <h2>
             Felhasználó regisztrálása
@@ -16,8 +25,8 @@
 <div class="row">
     <div class="col-md-12" style="align-content:center;">
         <MudPaper style=" padding: 10px; margin: 10px; padding-bottom:10px;
-                  text-align: center">
-            <MudForm Model="reg">
+                  text-align: center; opacity: 0.9">
+            <MudForm Model="reg" @ref=form>
                 <div class="row">
                     <div class="col-md-3"></div>
                     <div class="col-md-6" align="center" style="padding: 30px;">
@@ -30,12 +39,12 @@
                         <MudTextField T="string" Label="Password" HelperText="Choose a strong password" @bind-Value="reg.ConfirmPassword"
                                       InputType="InputType.Password" Required="true"
                                       RequiredError="Password is required!" />
-                        <MudSelect T="int" @bind-Value="reg.Role" Label="Jogosultság" Dense="true" Variant="Variant.Text">
+                        <MudRadioGroup style="padding-top: 5px" @bind-SelectedOption="reg.Role">
                             @foreach (var item in roles)
                             {
-                                <MudSelectItem Value="@item.Id">@item.Name</MudSelectItem>
+                                <MudRadio Option="item.Id" Color="Color.Primary" Dense="true">@item.Name</MudRadio>
                             }
-                        </MudSelect>
+                        </MudRadioGroup>
                     </div>
                 </div>
                 <div class=row>
@@ -54,11 +63,11 @@
 
 @if (showAlert)
 {
-    <MudAlert Severity="Severity.Success" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(false))">Felhasználó sikeresen hozzáadva!</MudAlert>
+    <MudAlert Severity="Severity.Success" Variant="Variant.Filled" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(false))">Felhasználó sikeresen hozzáadva!</MudAlert>
 }
-@if (showAlert)
+@if (failedAlert)
 {
-    <MudAlert Severity="Severity.Error" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(false))">Felhasználó hozzáadása sikertelen!</MudAlert>
+    <MudAlert Severity="Severity.Error" Variant="Variant.Filled" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(false))">Felhasználó hozzáadása sikertelen!</MudAlert>
 }
 @code {
     Registration reg = new();
@@ -104,6 +113,7 @@
     }
     async Task AddUser()
     {
+        await form.Validate();
         bool success = await _regRepo.Create(reg);
         if (success)
         {
@@ -113,10 +123,8 @@
     }
     private void CloseMe(bool value)
     {
-        if (value)
-        {
-            showAlert = false;
-            failedAlert = false;
-        }
+        showAlert = false;
+        failedAlert = false;
+
     }
 }

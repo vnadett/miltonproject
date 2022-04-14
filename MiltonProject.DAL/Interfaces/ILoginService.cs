@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MiltonProject.DAL.DTOs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,5 +9,6 @@ namespace MiltonProject.DAL.Interfaces
 {
     public interface ILoginService
     {
+        Login Login(Login loginUser);
     }
 }

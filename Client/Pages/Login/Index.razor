@@ -1,0 +1,75 @@
+﻿@using miltonProject.Client.Interfaces
+@inject ILoginRepository _loginRepo
+@inject NavigationManager _nav
+@inject Blazored.SessionStorage.ISessionStorageService _storage
+
+@page "/Login"
+
+<style>
+    html, body {
+        background-image: url(https://uni-milton.hu/wp-content/uploads/2021/07/KR_20210723_0086-scaled.jpg);
+        background-size: cover;
+        background-repeat: no-repeat;
+        height: 100%;
+    }
+
+    .login {
+        padding-top: 15%;
+    }
+
+    .pad {
+    }
+</style>
+
+<div class="row login">
+    <div class="col-md-3"></div>
+    <div class="col-md-6 pad">
+        <MudPaper style="opacity: 0.8 ;padding: 30px;">
+            <h3>Bejelentkezés</h3>
+            <MudForm Model=sendLogin>
+                <div class="row">
+                    <MudTextField T=string Label="Felhasználónév" @bind-Value="sendLogin.UserName" Required="true" RequiredError="Felhasználónév megadása kötelező!" Variant="Variant.Outlined"></MudTextField>
+                    <MudTextField T=string Label="Jelszó" InputType=InputType.Password @bind-Value="sendLogin.Password" Required="true" RequiredError="Jelszó megadása kötelező!" Variant="Variant.Outlined"></MudTextField>
+                </div>
+                <div class="row" style="margin-top: 20px;">
+                    <MudButton Variant="Variant.Filled" IconColor="Color.Secondary" Size="Size.Large" Color="Color.Info" OnClick="LoginUser" StartIcon="@Icons.Material.Filled.Login">Bejelentkezés</MudButton>
+                </div>
+            </MudForm>
+        </MudPaper>
+    </div>
+</div>
+@if (failedAlert)
+{
+    <MudAlert Severity="Severity.Error" Variant="Variant.Filled" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(false))">Felhasználó hozzáadása sikertelen!</MudAlert>
+}
+
+@code
+{
+    Models.Login sendLogin = new();
+    bool failedAlert = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    }
+    async Task LoginUser()
+    {
+        var getLoggedUser = await _loginRepo.LoginUser(sendLogin);
+        if (getLoggedUser.Success != null && getLoggedUser.Success == true)
+        {
+            await _storage.SetItemAsync("id", getLoggedUser.Id);
+            await _storage.SetItemAsync("username", getLoggedUser.UserName);
+            await _storage.SetItemAsync("success", getLoggedUser.Success);
+            await _storage.SetItemAsync("role", getLoggedUser.Role);
+            _nav.NavigateTo("/userpage");
+        }
+        else
+        {
+            failedAlert = true;
+        }
+    }
+    private void CloseMe(bool value)
+    {
+        failedAlert = false;
+    }
+}

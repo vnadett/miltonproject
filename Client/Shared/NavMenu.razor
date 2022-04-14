@@ -1,4 +1,6 @@
-﻿
+﻿@inject NavigationManager _nav
+@inject Blazored.SessionStorage.ISessionStorageService _storage
+
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href=""><MudImage Src="uj-logo-h121.png" Height=40 Width=200 /></a>
@@ -10,26 +12,55 @@
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Kezdőlap
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="registration">
-                <span class="oi oi-person" aria-hidden="true"></span> Felhasználó hozzáadása
-            </NavLink>
-        </div>
+        @if (!loggedIn)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="Login">
+                    <span class="oi oi-account-login" aria-hidden="true"></span> Bejelentkezés
+                </NavLink>
+            </div>
+        }
+        else
+        {
+            if (role != 1)
+            {
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="registration">
+                        <span class="oi oi-person" aria-hidden="true"></span> Felhasználó hozzáadása
+                    </NavLink>
+                </div>
+            }
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="" @onclick="LogOut">
+                    <span class="oi oi-account-logout" aria-hidden="true"></span> Kijelentkezés
+                </NavLink>
+            </div>
+        }
     </nav>
 </div>
 
 @code {
     private bool collapseNavMenu = true;
+    private bool loggedIn;
+    private int role;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
+    protected override async Task OnInitializedAsync()
+    {
+        loggedIn = await _storage.GetItemAsync<bool>("success");
+        role = await _storage.GetItemAsync<int>("role");
+    }
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    private async void LogOut()
+    {
+        await _storage.RemoveItemAsync("success");
+        await _storage.RemoveItemAsync("username");
+        await _storage.RemoveItemAsync("id");
+        await _storage.RemoveItemAsync("role");
     }
 }

@@ -15,6 +15,7 @@ namespace miltonProject.Server.Controllers
         {
             _db = db;
         }
+
         [HttpPost("Registration")]
         public async Task<ActionResult<bool>> Registration(Registration newUser)
         {
@@ -22,13 +23,13 @@ namespace miltonProject.Server.Controllers
             {
                 Registration user = _db.Registration(newUser);
                 await Task.FromResult(user);
-                if (user.Success) { return true; }
-                else return false;
+                if (user.Success) { return Ok(); }
+                else return BadRequest();
             }
             catch (Exception ex)
             {
 
-                return BadRequest(ex.Message);
+                return BadRequest();
             }
 
         }

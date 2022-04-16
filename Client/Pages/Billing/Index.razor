@@ -1,0 +1,51 @@
+﻿@using miltonProject.Client.Models
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using miltonProject.Client.Interfaces
+
+@page "/billingrequest"
+
+<style>
+    html, body {
+        background-image: url(https://uni-milton.hu/wp-content/uploads/2021/07/KR_20210723_0086-scaled.jpg);
+        background-size: cover;
+        background-repeat: no-repeat;
+        height: 100%;
+    }
+</style>
+
+<div class="row">
+    <MudPaper style="padding: 20px; margin: 10px; opacity: 0.8;
+    text-align: center">
+        <h2>
+            Számlakérelem létrehozása
+        </h2>
+    </MudPaper>
+</div>
+<div class="row">
+    <div class="col-md-12" style="align-content:center;">
+        <MudPaper style=" padding: 10px; margin: 10px; padding-bottom:10px;
+                  text-align: center; opacity: 0.9">
+            <MudForm Model="billing">
+                <div class="row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-6" align="center" style="padding: 30px;">
+                    </div>
+                </div>
+                <div class=row>
+                    <div class="col-md-12">
+                        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Add" Style="background-color: green; color: white; margin: 10px">
+                            Felhasználó hozzáadása
+                        </MudButton>
+                    </div>
+                </div>
+            </MudForm>
+        </MudPaper>
+    </div>
+
+</div>
+
+
+@code {
+    BillingRequest billing = new();
+}

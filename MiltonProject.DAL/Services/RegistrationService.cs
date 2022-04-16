@@ -7,6 +7,7 @@ using MiltonProject.DAL.Interfaces;
 using MiltonProject.DAL.DTOs;
 using MiltonProject.DAL.Models;
 
+
 namespace MiltonProject.DAL.Services
 {
     public class RegistrationService : IRegistrationService
@@ -36,6 +37,16 @@ namespace MiltonProject.DAL.Services
                         _db.User.Add(user);
                         _db.SaveChanges();
                         int userId = user.Id;
+                        IEmailService emailService = new EmailService();
+
+                        string emailBody = "A Milton Friedman Egyetem számlázási rendszerébe ezzel az e-mail címmel regisztráció történt.\n\n" +
+                            "Felhasználónév: " + model.UserName + "\n" +
+                            "Jelszó: " + model.Password + "\n\n" +
+                            "Az első bejelentkezéskor a jelszó megváltoztatása javasolt.";
+                        string title = "Regisztrációs információ";
+
+                        emailService.EmailSender(model.Email, emailBody, title);
+
                         return _db.User.Where(w => w.Id == userId).Select(s => new Registration
                         {
                             Email = s.Email,
@@ -45,7 +56,6 @@ namespace MiltonProject.DAL.Services
                         }).FirstOrDefault();
                     }
                 }
-
             }
             catch (Exception)
             {
@@ -74,6 +84,56 @@ namespace MiltonProject.DAL.Services
             }
             else
                 return false;
+        }
+        //get users
+        public List<UserDetailsAndLogin> GetUsers()
+        {
+            ApplicationDbContext _db = new ApplicationDbContext(SetDatabase.dbContextOptionsBuilder());
+            List<User> userList = new();
+            List<DAL.Models.UserDetails> detailsList = new();
+            List<UserDetailsAndLogin> userDetailsList = new();
+            using (_db)
+            {
+                userList = _db.User.Select(s => s).ToList();
+                detailsList = _db.UserDetails.Select(s => s).ToList();
+                foreach (var u in userList)
+                {
+                    foreach (DAL.Models.UserDetails details in detailsList)
+                    {
+                        if (details.UserId == u.Id)
+                        {
+                            var user = new UserDetailsAndLogin
+                            {
+                                Email = u.Email,
+                                UserName = u.UserName,
+                                FirstName = details.FirstName,
+                                LastName = details.LastName,
+                                IsActive = details.IsActive,
+                                IsBilling = details.IsBilling,
+                                Role = u.Role,
+                                UserId = u.Id,
+                            };
+                            userDetailsList.Add(user);
+                        }
+                        else
+                        {
+                            if (userDetailsList.Where(w => w.UserId == u.Id).FirstOrDefault() == null)
+                            {
+                                var user = new UserDetailsAndLogin
+                                {
+                                    Email = u.Email,
+                                    UserName = u.UserName,
+                                    Role = u.Role,
+                                    UserId = u.Id,
+                                };
+                                userDetailsList.Add(user);
+                            }
+                        }
+                    }
+                }
+
+                return userDetailsList;
+            }
         }
     }
 }

@@ -6,5 +6,6 @@ namespace miltonProject.Client.Interfaces
     {
         Task<bool> Create(Details obj, int id);
         Task<Details> Get(int id);
+        Task<List<UserDetailsAll>> GetAllUserInfo();
     }
 }

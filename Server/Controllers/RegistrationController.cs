@@ -2,6 +2,7 @@
 using MiltonProject.DAL.Interfaces;
 using MiltonProject.DAL.DTOs;
 using System.Web.Http.Cors;
+using MiltonProject.DAL.Models;
 
 namespace miltonProject.Server.Controllers
 {
@@ -34,5 +35,24 @@ namespace miltonProject.Server.Controllers
 
         }
 
+        [HttpGet("GetUsers")]
+        public async Task<ActionResult<List<UserDetailsAndLogin>>> GetUsers()
+        {
+            try
+            {
+                List<UserDetailsAndLogin> users = _db.GetUsers();
+                await Task.FromResult(users);
+                if (users.Count != 0) { return Ok(users); }
+                else return BadRequest();
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest();
+            }
+
+
+
+        }
     }
 }

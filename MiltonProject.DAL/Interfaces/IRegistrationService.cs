@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MiltonProject.DAL.DTOs;
+using MiltonProject.DAL.Models;
 
 namespace MiltonProject.DAL.Interfaces
 {
@@ -11,5 +12,6 @@ namespace MiltonProject.DAL.Interfaces
     {
         Registration Registration(Registration model);
         bool UserNameOrEmailWasTaken(string email, string username);
+        List<UserDetailsAndLogin> GetUsers();
     }
 }

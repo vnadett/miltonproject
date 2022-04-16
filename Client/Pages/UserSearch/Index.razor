@@ -1,0 +1,122 @@
+﻿@using miltonProject.Client.Models
+@using miltonProject.Client.Interfaces
+@using System.Linq.Expressions
+@inject IUserDetailRepository _userRepo
+
+@page "/usersearch"
+<style>
+    html, body {
+        background-image: url(https://uni-milton.hu/wp-content/uploads/2021/07/KR_20210723_0086-scaled.jpg);
+        background-size: cover;
+        background-repeat: no-repeat;
+        height: 100%;
+    }</style>
+<div class="row">
+    <MudPaper Style="    padding: 25px;opacity: 0.8;
+    margin-bottom: 20px;">
+        <MudForm Model="searchModel">
+            <div class=row>
+                <div class="col-md-3">
+                    <MudTextField T=string Label="Vezetéknév" @bind-Value="searchModel.LastName"></MudTextField>
+                </div>
+                <div class="col-md-3">
+                    <MudTextField T=string Label="Keresztnév" @bind-Value="searchModel.FirstName"></MudTextField>
+                </div>
+                <div class="col-md-2">
+                    <MudCheckBox @bind-Checked=searchModel.IsBilling Label="Számlás"></MudCheckBox>
+                </div>
+                <div class="col-md-2">
+                    <MudCheckBox @bind-Checked=searchModel.IsActive Label="Aktív"></MudCheckBox>
+                </div>
+                <div class="col-md-2">
+                    <MudButton StartIcon="@Icons.Filled.Search" Color="Color.Info" Variant="Variant.Filled" OnClick="Search">Keresés</MudButton>
+                </div>
+            </div>
+        </MudForm>
+    </MudPaper>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <MudTable Items="@Users" Style="opacity: 0.9;" Height="450px" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTable" T="UserDetailsAll">
+            <HeaderContent>
+                <MudTh>Név</MudTh>
+                <MudTh>E-mail cím</MudTh>
+                <MudTh>Jogosultság</MudTh>
+                <MudTh>Aktív</MudTh>
+                <MudTh>Számlás</MudTh>
+                <MudTh>Megtekintés</MudTh>
+                <MudTh>Új kérvény</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Név">@context.LastName @context.FirstName</MudTd>
+                <MudTd DataLabel="E-mail cím">@context.Email</MudTd>
+                <MudTd DataLabel="Jogosultság">
+                    @{
+                        string role;
+                        if (context.Role == 0)
+                        {
+                            role = "Rendszergazda";
+                        }
+                        else if (context.Role == 1)
+                        {
+                            role = "Felhasználó";
+                        }
+                        else
+                        {
+                            role = "Adminisztrátor";
+                        }
+                        @role
+                    }
+                </MudTd>
+                <MudTd DataLabel="Aktív">
+                    @{
+                        <MudCheckBox @bind-Checked="context.IsActive" Disabled="true"></MudCheckBox>
+                    }
+                </MudTd>
+                <MudTd DataLabel="Számlás">
+                    @{
+                        <MudCheckBox @bind-Checked="context.IsBilling" Disabled="true"></MudCheckBox>
+                    }
+                </MudTd>
+                <MudTd DataLabel="Megtekintés"><MudButton Color="Color.Info" StartIcon="@Icons.Filled.OpenInNew"></MudButton></MudTd>
+                <MudTd DataLabel="Új kérvény"><MudButton Color="Color.Info" StartIcon="@Icons.Filled.Create"></MudButton></MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager HideRowsPerPage="true" />
+            </PagerContent>
+        </MudTable>
+    </div>
+</div>
+
+
+@code {
+    List<UserDetailsAll> Users = new();
+    UserDetailsAll searchModel = new();
+
+    private MudTable<UserDetailsAll> mudTable;
+    protected override async Task OnInitializedAsync()
+    {
+        Users = await _userRepo.GetAllUserInfo();
+    }
+    async Task Search()
+    {
+        Users = await _userRepo.GetAllUserInfo();
+
+        if (searchModel != null)
+        {
+            if (searchModel.FirstName != null || searchModel.LastName != null)
+            {
+                Users = Users.Where(w => w.FirstName.Contains(searchModel.FirstName) && w.LastName == searchModel.LastName && w.IsBilling == searchModel.IsBilling && w.IsActive == searchModel.IsActive).Select(s => s).ToList();
+            }
+            //else if (searchModel.FirstName != null)
+            //{
+            //    Users = Users.Where(w => w.FirstName.Contains(searchModel.FirstName) && w.IsBilling == searchModel.IsBilling && w.IsActive == searchModel.IsActive).Select(s => s).ToList();
+            //}
+            //else if (searchModel.LastName != null)
+            //{
+            //    Users = Users.Where(w => w.LastName.Contains(searchModel.LastName) && w.IsBilling == searchModel.IsBilling && w.IsActive == searchModel.IsActive).Select(s => s).ToList();
+            //}
+        }
+    }
+    }

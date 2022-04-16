@@ -16,5 +16,6 @@ namespace MiltonProject.DAL
         }
         public virtual DbSet<User> User { get; set; }
         public virtual DbSet<UserDetails> UserDetails { get; set; }
+        public virtual DbSet<Billing> Billings { get; set; }
     }
 }

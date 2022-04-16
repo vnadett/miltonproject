@@ -11,7 +11,7 @@ namespace MiltonProject.DAL.Services
 {
     public class EmailService : IEmailService
     {
-        void EmailSender(string email)
+        void EmailSender(string email, string body, string title)
         {
             var smtpClient = new SmtpClient("smtp.gmail.com")
             {
@@ -20,12 +20,12 @@ namespace MiltonProject.DAL.Services
                 EnableSsl = true,
             };
 
-            smtpClient.Send("miltonbillingservice@gmail.com", email, "Lejáró határidő", "Teszt");
+            smtpClient.Send("miltonbillingservice@gmail.com", email, title, body);
         }
 
-        void IEmailService.EmailSender(string email)
+        void IEmailService.EmailSender(string email, string body, string title)
         {
-            EmailSender(email);
+            EmailSender(email, body, title);
         }
     }
 }

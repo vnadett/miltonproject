@@ -44,5 +44,19 @@ namespace miltonProject.Client.Services
 
             return null;
         }
+        public async Task<List<UserDetailsAll>> GetAllUserInfo()
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, Endpoints.GetAllDetailsOfUsers);
+
+            HttpResponseMessage response = await _client.SendAsync(request);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<UserDetailsAll>>(content);
+            }
+
+            return null;
+        }
     }
 }

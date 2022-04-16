@@ -18,7 +18,7 @@ namespace miltonProject.Server.Controllers
 
         public async Task<ActionResult<bool>> Login(Email address)
         {
-            _db.EmailSender(address.EmailAddress);
+            _db.EmailSender(address.EmailAddress, address.Body, address.Title);
             return Ok(true);
         }
     }

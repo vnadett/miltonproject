@@ -12,5 +12,9 @@
         public static string Details = BaseURL + "UserDetail/Details";
         // get user details
         public static string GetDetails = BaseURL + "UserDetail/GetDetails";
+        //upload billing request by administrator
+        public static string UploadBillRequest = BaseURL + "Billing/UploadBillingRequest";
+        //get all details of all users
+        public static string GetAllDetailsOfUsers = BaseURL + "Registration/GetUsers";
     }
 }

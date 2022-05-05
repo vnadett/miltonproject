@@ -16,5 +16,8 @@ namespace MiltonProject.DAL.DTOs
         public DateTime? CreateDate { get; set; }
         public DateTime? UpdateDate { get; set; }
         public DateTime DeadLine { get; set; }
+        public string? FileName { get; set; }
+        public bool IsAccepted { get; set; }
+
     }
 }

@@ -26,15 +26,25 @@
             {
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="registration">
-                        <span class="oi oi-person" aria-hidden="true"></span> Felhasználó hozzáadása
+                        <span class="oi oi-plus" aria-hidden="true"></span> Felhasználó hozzáadása
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="userpage">
-                        <span class="oi oi-person" aria-hidden="true"></span> Adatlap
+                    <NavLink class="nav-link" href="usersearch">
+                        <span class="oi oi-people" aria-hidden="true"></span> Felhasználó keresés
                     </NavLink>
                 </div>
             }
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="userpage">
+                    <span class="oi oi-person" aria-hidden="true"></span> Adatlap
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href=@link>
+                    <span class="oi oi-document" aria-hidden="true"></span> Számlák
+                </NavLink>
+            </div>
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="" @onclick="LogOut">
                     <span class="oi oi-account-logout" aria-hidden="true"></span> Kijelentkezés
@@ -48,6 +58,8 @@
     private bool collapseNavMenu = true;
     private bool loggedIn;
     private int role;
+    int id;
+    string link;
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
@@ -55,6 +67,8 @@
     {
         loggedIn = await _storage.GetItemAsync<bool>("success");
         role = await _storage.GetItemAsync<int>("role");
+        id = await _storage.GetItemAsync<int>("id");
+        link = "billing/" + id;
     }
     private void ToggleNavMenu()
     {

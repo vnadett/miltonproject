@@ -11,6 +11,7 @@ namespace MiltonProject.DAL.Services
 {
     public class BillingService : IBillingService
     {
+
         //upload the bill from administrator 
         public bool UploadBill(Request model)
         {
@@ -36,6 +37,39 @@ namespace MiltonProject.DAL.Services
             {
 
                 return false;
+            }
+        }
+        //get bills by userId
+        public List<Billing> GetBillsByUserId(int id)
+        {
+
+            ApplicationDbContext _db = new ApplicationDbContext(SetDatabase.dbContextOptionsBuilder());
+
+            using (_db)
+            {
+                var bills = _db.Billings.Where(w => w.BillingUserId == id).ToList();
+
+                return bills;
+            }
+        }
+        //upload files to the bill requests
+        public bool UploadFile(string path, int id)
+        {
+            ApplicationDbContext _db = new ApplicationDbContext(SetDatabase.dbContextOptionsBuilder());
+            using (_db)
+            {
+                try
+                {
+                    var bill = _db.Billings.Where(w => w.Id == id).Select(s => s).FirstOrDefault();
+                    bill.FileName = path;
+                    bill.UpdateDate = DateTime.Now;
+                    _db.Billings.Update(bill);
+                    _db.SaveChanges();
+                    return true;
+                }
+                catch (Exception) { return false; }
+
+
             }
         }
     }

@@ -1,0 +1,55 @@
+﻿@using miltonProject.Client.Interfaces
+@using miltonProject.Client.Models
+@inject Blazored.SessionStorage.ISessionStorageService _storage
+@inject IBillingRepository _billrepo
+
+
+<MudDialogProvider FullWidth="true"
+                   MaxWidth="MaxWidth.Small"
+                   CloseButton="true"
+                   DisableBackdropClick="true"
+                   NoHeader="true"
+                   Position="DialogPosition.Center" />
+
+
+<MudDialog @bind-IsVisible="Visible">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" /> Új számlakérelem <b> @UsersFullName </b> részére
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm Model="billreq">
+            <MudDatePicker PickerVariant="PickerVariant.Dialog" Label="Leadási határidő" @bind-Date="billreq.DeadLine" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit" Class="px-10">Mentés</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => ClosePopUp.InvokeAsync(false))" Class="px-10">Mégsem</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [Parameter]
+    public bool Visible { get; set; }
+    [Parameter]
+    public string UsersFullName { get; set; }
+    [Parameter]
+    public int UserID { get; set; }
+    [Parameter]
+    public EventCallback<bool> ClosePopUp { get; set; }
+
+    BillingRequest billreq = new();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        billreq.BillingUserId = UserID;
+        billreq.UploaderId = await _storage.GetItemAsync<int>("id");
+        billreq.CreateDate = DateTime.Now;
+    }
+    async Task Submit()
+    {
+        await _billrepo.UploadRequest(billreq);
+        await ClosePopUp.InvokeAsync(false);
+
+    }
+}

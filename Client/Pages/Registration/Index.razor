@@ -3,6 +3,8 @@
 @using System.ComponentModel.DataAnnotations
 @using miltonProject.Client.Interfaces
 @inject IRegistrationRepository _regRepo
+@inject Blazored.SessionStorage.ISessionStorageService _storage
+@inject NavigationManager _nav
 
 @page "/registration"
 
@@ -81,7 +83,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-
+        if (!await _storage.GetItemAsync<bool>("success"))
+        {
+            _nav.NavigateTo("Login");
+        }
+        if (await _storage.GetItemAsync<bool>("success") && await _storage.GetItemAsync<int>("id") == 1)
+            _nav.NavigateTo("userpage", forceLoad: true);
         roles.Add(new Role
             {
                 Id = 0,

@@ -18,6 +18,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddScoped<IRegistrationRepository, RegistrationRepository>();
 builder.Services.AddScoped<ILoginRepository, LoginRepository>();
 builder.Services.AddScoped<IUserDetailRepository, UserDetailRepository>();
+builder.Services.AddScoped<IBillingRepository, BillingRepository>();
 
 await builder.Build().RunAsync();
 

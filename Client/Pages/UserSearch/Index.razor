@@ -2,6 +2,7 @@
 @using miltonProject.Client.Interfaces
 @using System.Linq.Expressions
 @inject IUserDetailRepository _userRepo
+@inject NavigationManager _nav
 
 @page "/usersearch"
 <style>
@@ -10,7 +11,8 @@
         background-size: cover;
         background-repeat: no-repeat;
         height: 100%;
-    }</style>
+    }
+</style>
 <div class="row">
     <MudPaper Style="    padding: 25px;opacity: 0.8;
     margin-bottom: 20px;">
@@ -79,8 +81,8 @@
                         <MudCheckBox @bind-Checked="context.IsBilling" Disabled="true"></MudCheckBox>
                     }
                 </MudTd>
-                <MudTd DataLabel="Megtekintés"><MudButton Color="Color.Info" StartIcon="@Icons.Filled.OpenInNew"></MudButton></MudTd>
-                <MudTd DataLabel="Új kérvény"><MudButton Color="Color.Info" StartIcon="@Icons.Filled.Create"></MudButton></MudTd>
+                <MudTd DataLabel="Megtekintés"><MudButton Color="Color.Info" StartIcon="@Icons.Filled.OpenInNew" OnClick="@(() => OpenUserPage(context.UserId))"></MudButton></MudTd>
+                <MudTd DataLabel="Új kérvény"><MudButton Color="Color.Info" StartIcon="@Icons.Filled.Create" OnClick="@(() => OpenDialog(context.UserId, context.UserName, context.FirstName, context.LastName))"></MudButton></MudTd>
             </RowTemplate>
             <PagerContent>
                 <MudTablePager HideRowsPerPage="true" />
@@ -88,35 +90,56 @@
         </MudTable>
     </div>
 </div>
-
+<miltonProject.Client.Pages.UserSearch.NewBillingRequestPopUp UserID="@userId" UsersFullName="@usersFullName" Visible="@PopupVisible" ClosePopUp="PopupHandler" />
 
 @code {
     List<UserDetailsAll> Users = new();
     UserDetailsAll searchModel = new();
 
+    int userId;
+    string usersFullName;
+    public bool PopupVisible { get; set; } = false;
+
     private MudTable<UserDetailsAll> mudTable;
     protected override async Task OnInitializedAsync()
     {
         Users = await _userRepo.GetAllUserInfo();
+        searchModel.IsActive = true;
+        searchModel.IsBilling = true;
     }
     async Task Search()
     {
         Users = await _userRepo.GetAllUserInfo();
 
-        if (searchModel != null)
+        if (searchModel != null && Users != null)
         {
-            if (searchModel.FirstName != null || searchModel.LastName != null)
+            if (!string.IsNullOrEmpty(searchModel.FirstName))
             {
-                Users = Users.Where(w => w.FirstName.Contains(searchModel.FirstName) && w.LastName == searchModel.LastName && w.IsBilling == searchModel.IsBilling && w.IsActive == searchModel.IsActive).Select(s => s).ToList();
+                Users = Users?.FindAll(f => f.FirstName == searchModel.FirstName);
             }
-            //else if (searchModel.FirstName != null)
-            //{
-            //    Users = Users.Where(w => w.FirstName.Contains(searchModel.FirstName) && w.IsBilling == searchModel.IsBilling && w.IsActive == searchModel.IsActive).Select(s => s).ToList();
-            //}
-            //else if (searchModel.LastName != null)
-            //{
-            //    Users = Users.Where(w => w.LastName.Contains(searchModel.LastName) && w.IsBilling == searchModel.IsBilling && w.IsActive == searchModel.IsActive).Select(s => s).ToList();
-            //}
+            if (!string.IsNullOrEmpty(searchModel.LastName))
+            {
+                Users = Users?.FindAll(f => f.FirstName == searchModel.FirstName);
+            }
+            Users = Users?.FindAll(f => f.IsActive == searchModel.IsActive && f.IsBilling == searchModel.IsBilling);
         }
     }
+    void OpenDialog(int userid, string username, string firstname, string lastname)
+    {
+        userId = userid;
+        if (string.IsNullOrEmpty(firstname) || string.IsNullOrEmpty(lastname))
+            usersFullName = username;
+        else
+            usersFullName = lastname + " " + firstname;
+
+        PopupVisible = true;
     }
+    void PopupHandler(bool visible)
+    {
+        PopupVisible = visible;
+    }
+    void OpenUserPage(int id)
+    {
+        _nav.NavigateTo("/billing/" + id);
+    }
+}

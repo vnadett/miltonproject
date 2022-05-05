@@ -16,5 +16,7 @@
         public static string UploadBillRequest = BaseURL + "Billing/UploadBillingRequest";
         //get all details of all users
         public static string GetAllDetailsOfUsers = BaseURL + "Registration/GetUsers";
+        //get bills by userid
+        public static string GetBillsById = BaseURL + "Billing/GetBillsByUserId";
     }
 }

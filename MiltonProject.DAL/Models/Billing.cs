@@ -17,6 +17,7 @@ namespace MiltonProject.DAL.Models
         public DateTime UpdateDate { get; set; }
         public string? FileName { get; set; }
         public DateTime DeadLine { get; set; }
+        public bool IsAccepted { get; set; }
 
     }
 }

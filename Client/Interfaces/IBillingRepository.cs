@@ -1,6 +1,10 @@
-﻿namespace miltonProject.Client.Interfaces
+﻿using miltonProject.Client.Models;
+
+namespace miltonProject.Client.Interfaces
 {
     public interface IBillingRepository
     {
+        Task<bool> UploadRequest(BillingRequest obj);
+        Task<List<BillingRequest>> GetBillsByUserId(int id);
     }
 }

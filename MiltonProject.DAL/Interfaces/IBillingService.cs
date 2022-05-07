@@ -13,5 +13,6 @@ namespace MiltonProject.DAL.Interfaces
         bool UploadBill(Request model);
         List<Billing> GetBillsByUserId(int id);
         bool UploadFile(string path, int id);
+        List<Billing> GetBillings();
     }
 }

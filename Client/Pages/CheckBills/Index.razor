@@ -1,0 +1,101 @@
+﻿@using Microsoft.Extensions.Hosting
+@using miltonProject.Client.Models
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using miltonProject.Client.Interfaces
+@using Microsoft.AspNetCore.Hosting
+@using System.IO
+@inject Blazored.SessionStorage.ISessionStorageService _storage
+@inject NavigationManager _nav
+@inject IBillingRepository _billingrepo
+@inject IUserDetailRepository _userrepo
+@inject HttpClient Http
+@using System.IO
+@inject IJSRuntime JS
+
+@page "/checkbills"
+
+<style>
+    html, body {
+        background-image: url(https://uni-milton.hu/wp-content/uploads/2016/04/MM_MILTONkonf_0328_-5-1.jpg);
+        background-size: cover;
+        background-repeat: no-repeat;
+        height: 100%;
+    }
+</style>
+
+<MudTable Items="waitings" T=BillingRequest Loading=loading>
+    <HeaderContent>
+        <MudTh>Lejárat</MudTh>
+        <MudTh>Létrehozó</MudTh>
+        <MudTh>Létrehozva</MudTh>
+        <MudTh>Elfogadott</MudTh>
+        <MudTh>Letöltés</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Lejárat">@context.DeadLine?.ToString("yyyy.MM.dd")</MudTd>
+        <MudTd DataLabel="Létrehozó">
+            @{
+                var u = users.Where(w => w.UserId == context.UploaderId).FirstOrDefault();
+                @u.UserName
+            }
+        </MudTd>
+        <MudTd DataLabel="Létrehozva">@context.CreateDate</MudTd>
+        <MudTd DataLabel="Elfogadott">
+            @{
+                <MudCheckBox @onclick=@(() => OpenAcceptDialog(context.Id)) @bind-Checked="context.IsAccepted"></MudCheckBox>
+            }
+        </MudTd>
+        @{
+            if (context.FileName != null)
+            {
+                var filename = "/" + context.FileName;
+                <MudTd DataLabel="Fájl letöltés"><a href="@filename" download="@context.FileName"><MudButton StartIcon=@Icons.Filled.Download></MudButton></a></MudTd>
+            }
+        }
+    </RowTemplate>
+</MudTable>
+<miltonProject.Client.Pages.CheckBills.CheckBillDialog Visible="DialogVisible" ClosePopUp="DialogVisibleHandler" BillId=billid UsersFullName=@userFullName />
+
+@code {
+    public bool DialogVisible { get; set; } = false;
+
+    List<BillingRequest> billreqs = new();
+    List<BillingRequest> waitings = new();
+    List<UserDetailsAll> users = new();
+
+    bool loading;
+    int loggedRole;
+    int billid;
+    int loggedId;
+    string userFullName;
+
+    //init
+    protected override async Task OnInitializedAsync()
+    {
+        loading = true;
+        loggedRole = await _storage.GetItemAsync<int>("role");
+        loggedId = await _storage.GetItemAsync<int>("id");
+        //only administrators can see this page
+        if (loggedRole != 2)
+        {
+            _nav.NavigateTo("/userpage");
+        }
+        users = await _userrepo.GetAllUserInfo();
+        billreqs = await _billingrepo.GetBills();
+        if (billreqs != null && billreqs.Count > 0)
+            waitings = billreqs.Where(w => w.IsAccepted == false).ToList();
+        loading = false;
+    }
+    void DialogVisibleHandler(bool visible)
+    {
+        DialogVisible = visible;
+    }
+    void OpenAcceptDialog(int billId)
+    {
+        billid = billId;
+        var user = users.Where(w => w.UserId == loggedId).FirstOrDefault();
+        userFullName = user.LastName + user.FirstName;
+        DialogVisible = true;
+    }
+}

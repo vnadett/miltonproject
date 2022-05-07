@@ -20,20 +20,31 @@ namespace MiltonProject.DAL.Services
             {
                 using (_db)
                 {
-                    var bill = new Billing()
+                    var updatebill = _db.Billings.Where(w => w.Id == model.Id).FirstOrDefault();
+                    if (updatebill != null)
                     {
-                        BillingUserId = model.BillingUserId,
-                        CreateDate = DateTime.Now,
-                        DeadLine = model.DeadLine,
-                        UploaderId = model.UploaderId,
-                    };
-                    _db.Billings.Add(bill);
+                        updatebill.UpdateDate = DateTime.Now;
+                        updatebill.IsAccepted = model.IsAccepted;
+                        updatebill.CreateDate = (DateTime)model.CreateDate;
 
+                        _db.Billings.Update(updatebill);
+                    }
+                    else
+                    {
+                        var bill = new Billing()
+                        {
+                            BillingUserId = model.BillingUserId,
+                            CreateDate = DateTime.Now,
+                            DeadLine = model.DeadLine,
+                            UploaderId = model.UploaderId,
+                        };
+                        _db.Billings.Add(bill);
+                    }
                     _db.SaveChanges();
                     return true;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
                 return false;
@@ -70,6 +81,17 @@ namespace MiltonProject.DAL.Services
                 catch (Exception) { return false; }
 
 
+            }
+        }
+
+        // get all the bills
+        public List<Billing> GetBillings()
+        {
+            ApplicationDbContext _db = new ApplicationDbContext(SetDatabase.dbContextOptionsBuilder());
+            using (_db)
+            {
+                var bills = _db.Billings.ToList();
+                return bills;
             }
         }
     }

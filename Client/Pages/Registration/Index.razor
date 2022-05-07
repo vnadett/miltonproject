@@ -80,7 +80,7 @@
     bool failedAlert = false;
 
     List<Role> roles = new();
-
+    //init
     protected override async Task OnInitializedAsync()
     {
         if (!await _storage.GetItemAsync<bool>("success"))
@@ -105,6 +105,7 @@
                 Name = "Adminisztrátor"
             });
     }
+    //generating random password
     void GeneratePassword()
     {
         string rndPass = "";
@@ -118,6 +119,7 @@
         reg.Password = rndPass;
         reg.ConfirmPassword = rndPass;
     }
+    //upload new user to database
     async Task AddUser()
     {
         await form.Validate();
@@ -128,6 +130,7 @@
         }
         else failedAlert = true;
     }
+    //close the alert
     private void CloseMe(bool value)
     {
         showAlert = false;

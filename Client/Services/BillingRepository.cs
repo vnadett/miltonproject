@@ -45,6 +45,21 @@ namespace miltonProject.Client.Services
             return null;
 
         }
+        public async Task<List<BillingRequest>> GetBills()
+        {
 
+            var request = new HttpRequestMessage(HttpMethod.Get, Endpoints.GetBills);
+
+            HttpResponseMessage response = await _client.SendAsync(request);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<BillingRequest>>(content);
+            }
+
+            return null;
+
+        }
     }
 }

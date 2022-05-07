@@ -26,7 +26,7 @@ namespace miltonProject.Server.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest();
+                return BadRequest(ex.ToString());
             }
 
         }
@@ -45,12 +45,22 @@ namespace miltonProject.Server.Controllers
         {
             try
             {
-                var path = $"{_env.WebRootPath}\\Users\\Bernadett\\Documents\\Coding\\miltonproject\\Files\\{uploadedFile.FileName}";
+                var path = $"{_env.WebRootPath}\\Users\\Bernadett\\Documents\\Coding\\miltonproject\\Client\\wwwroot\\{uploadedFile.FileName}";
                 var fs = System.IO.File.Create(path);
                 fs.Write(uploadedFile.FileContent, 0, uploadedFile.FileContent.Length);
                 fs.Close();
-                _db.UploadFile(path, billId);
+                _db.UploadFile(uploadedFile.FileName, billId);
                 return Ok(true);
+            }
+            catch (Exception ex) { return BadRequest(ex.ToString()); }
+        }
+        [HttpGet("GetBills")]
+        public async Task<ActionResult<List<Billing>>> GetBills()
+        {
+            try
+            {
+                var result = _db.GetBillings();
+                return Ok(result);
             }
             catch (Exception ex) { return BadRequest(ex.ToString()); }
         }

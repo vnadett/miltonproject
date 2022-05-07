@@ -107,6 +107,7 @@
         searchModel.IsActive = true;
         searchModel.IsBilling = true;
     }
+    //TODO - Backend user search
     async Task Search()
     {
         Users = await _userRepo.GetAllUserInfo();
@@ -115,7 +116,7 @@
         {
             if (!string.IsNullOrEmpty(searchModel.FirstName))
             {
-                Users = Users?.FindAll(f => f.FirstName == searchModel.FirstName);
+                Users = Users?.FindAll(f => f.FirstName.Contains(searchModel.FirstName)).ToList();
             }
             if (!string.IsNullOrEmpty(searchModel.LastName))
             {

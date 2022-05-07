@@ -18,5 +18,7 @@
         public static string GetAllDetailsOfUsers = BaseURL + "Registration/GetUsers";
         //get bills by userid
         public static string GetBillsById = BaseURL + "Billing/GetBillsByUserId";
+        //get bills
+        public static string GetBills = BaseURL + "Billing/GetBills";
     }
 }

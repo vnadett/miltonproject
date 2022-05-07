@@ -40,11 +40,11 @@
 </div>
 @if (showAlert)
 {
-    <MudAlert Severity="Severity.Success" Variant="Variant.Filled" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(false))">Felhasználó sikeresen hozzáadva!</MudAlert>
+                    <MudAlert Severity="Severity.Success" Variant="Variant.Filled" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(false))">Felhasználói adatok sikeresen hozzáadva!</MudAlert>
 }
 @if (failedAlert)
 {
-    <MudAlert Severity="Severity.Error" Variant="Variant.Filled" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(false))">Felhasználó hozzáadása sikertelen!</MudAlert>
+                    <MudAlert Severity="Severity.Error" Variant="Variant.Filled" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(false))">Felhasználói adatok hozzáadása sikertelen!</MudAlert>
 }
 @code {
     Details userDetail = new();

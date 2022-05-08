@@ -84,13 +84,15 @@
         users = await _userrepo.GetAllUserInfo();
         billreqs = await _billingrepo.GetBills();
         if (billreqs != null && billreqs.Count > 0)
-            waitings = billreqs.Where(w => w.IsAccepted == false).ToList();
+            waitings = billreqs.Where(w => w.IsAccepted == false && w.FileName != null).ToList();
         loading = false;
     }
+    //close dialog
     void DialogVisibleHandler(bool visible)
     {
         DialogVisible = visible;
     }
+    //open dialog and set parameters
     void OpenAcceptDialog(int billId)
     {
         billid = billId;

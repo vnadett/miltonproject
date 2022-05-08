@@ -50,9 +50,16 @@ namespace miltonProject.Server.Controllers
 
                 return BadRequest();
             }
-
-
-
+        }
+        [HttpPost("ChangePass")]
+        public async Task<ActionResult<bool>> ChangePassword(User model)
+        {
+            try
+            {
+                _db.ChangePassword(model);
+                return Ok();
+            }
+            catch (Exception ex) { return BadRequest(ex.ToString()); }
         }
     }
 }

@@ -1,0 +1,108 @@
+﻿@using miltonProject.Client.Models
+@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@using miltonProject.Client.Interfaces
+@inject IRegistrationRepository _regRepo
+@inject IUserDetailRepository _userRepo
+@inject Blazored.SessionStorage.ISessionStorageService _storage
+
+@page "/changepass"
+
+<style>
+    html, body {
+        background-image: url(https://uni-milton.hu/wp-content/uploads/2021/07/KR_20210723_0086-scaled.jpg);
+        background-size: cover;
+        background-repeat: no-repeat;
+        height: 100%;
+    }
+</style>
+<div class="row">
+    <MudPaper style="padding: 20px; margin: 10px; opacity: 0.8;
+    text-align: center">
+        <h2>
+            Jelszóváltoztatás
+        </h2>
+    </MudPaper>
+</div>
+<div class="row">
+    <div class="col-md-12" style="align-content:center;">
+        <MudPaper style=" padding: 10px; margin: 10px; padding-bottom:10px;
+                  text-align: center; opacity: 0.9">
+            <MudForm Model="user" @ref=form>
+                <div class="row">
+                    <div class="col-md-3"></div>
+                    <div class="col-md-6" align="center" style="padding: 30px;">
+                        <MudTextField T="string" Label="Password" HelperText="Choose a strong password" @bind-Value="user.Password"
+                                      InputType="InputType.Password" Required="true"
+                                      RequiredError="Password is required!" />
+                        <MudTextField T="string" Label="Password" HelperText="Choose a strong password" @bind-Value="passConfirm"
+                                      InputType="InputType.Password" Required="true"
+                                      RequiredError="Password is required!" />
+                    </div>
+                </div>
+                <div class=row>
+                    <div class="col-md-12">
+                        <MudButton OnClick="ChangePassword" Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.ChangeCircle" Style="background-color: green; color: white; margin: 10px">
+                            Jelszó megváltoztatása
+                        </MudButton>
+                    </div>
+                </div>
+            </MudForm>
+        </MudPaper>
+    </div>
+</div>
+@if (showAlert)
+{
+    <MudAlert Severity="Severity.Warning" Variant="Variant.Filled" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(false))">A jelszavak nem egyeznek!</MudAlert>
+}
+@if (showSuccessAlert)
+{
+    <MudAlert Severity="Severity.Success" Variant="Variant.Filled" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(false))">Jelszava sikeresen megváltozott!</MudAlert>
+}
+@code {
+    MudForm form;
+    User user = new();
+    string passConfirm;
+    int loggedId;
+    private bool showAlert = false;
+    private bool showSuccessAlert = false;
+
+    //init
+    protected override async Task OnInitializedAsync()
+    {
+        var userInfos = await _userRepo.GetAllUserInfo();
+        loggedId = await _storage.GetItemAsync<int>("id");
+        if (userInfos != null && userInfos.Count > 0)
+        {
+            var u = userInfos.Where(w => w.UserId == loggedId).FirstOrDefault();
+            if (u != null)
+            {
+                user.Id = u.UserId;
+                user.Email = u.Email;
+                user.Role = u.Role;
+                user.UserName = u.UserName;
+            }
+        }
+    }
+
+    //change password
+    async Task ChangePassword()
+    {
+        if (passConfirm != user.Password)
+        {
+            showAlert = true;
+        }
+        else
+        {
+            user.ConfirmPassword = user.Password;
+            var result = await _regRepo.ChangePassword(user);
+            if (result) showSuccessAlert = true;
+        }
+    }
+    //close the alert
+    private void CloseMe(bool value)
+    {
+        showAlert = false;
+        showSuccessAlert = false;
+    }
+}

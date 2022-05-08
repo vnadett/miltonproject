@@ -28,6 +28,21 @@ namespace miltonProject.Client.Services
             }
             return false;
         }
+        public async Task<bool> ChangePassword(User obj)
+        {
+            if (obj == null) return false;
+
+            var request = new HttpRequestMessage(HttpMethod.Post, Endpoints.ChangePassword);
+            request.Content = new StringContent(JsonConvert.SerializeObject(obj), Encoding.UTF8, "application/json");
+
+            HttpResponseMessage response = await _client.SendAsync(request);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return true;
+            }
+            return false;
+        }
 
     }
 }

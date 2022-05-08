@@ -7,5 +7,6 @@ namespace miltonProject.Client.Interfaces
         Task<bool> UploadRequest(BillingRequest obj);
         Task<List<BillingRequest>> GetBillsByUserId(int id);
         Task<List<BillingRequest>> GetBills();
+        Task<bool> DeleteBill(int id);
     }
 }

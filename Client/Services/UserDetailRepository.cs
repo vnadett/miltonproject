@@ -13,6 +13,7 @@ namespace miltonProject.Client.Services
         {
             _client = new();
         }
+        //add details to users
         public async Task<bool> Create(Details obj, int id)
         {
             if (obj == null || id == 0) return false;
@@ -29,6 +30,7 @@ namespace miltonProject.Client.Services
             }
             return false;
         }
+        //get userdetails
         public async Task<Details> Get(int id)
         {
             if (id == 0) return null;
@@ -44,6 +46,7 @@ namespace miltonProject.Client.Services
 
             return null;
         }
+        //get all userinfo
         public async Task<List<UserDetailsAll>> GetAllUserInfo()
         {
             var request = new HttpRequestMessage(HttpMethod.Get, Endpoints.GetAllDetailsOfUsers);

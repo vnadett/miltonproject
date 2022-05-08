@@ -20,5 +20,9 @@
         public static string GetBillsById = BaseURL + "Billing/GetBillsByUserId";
         //get bills
         public static string GetBills = BaseURL + "Billing/GetBills";
+        //change password
+        public static string ChangePassword = BaseURL + "Registration/ChangePass";
+        //delete bill
+        public static string DeleteBill = BaseURL + "Billing/DeleteBill";
     }
 }

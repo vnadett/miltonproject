@@ -35,6 +35,8 @@ builder.Services.AddScoped<IUserDetailService, UserDetailService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IBillingService, BillingService>();
 
+BillingService billingService = new BillingService();
+billingService.ExpiringBillEmailSender();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

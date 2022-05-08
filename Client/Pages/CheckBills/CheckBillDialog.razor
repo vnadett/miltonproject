@@ -2,6 +2,7 @@
 @using miltonProject.Client.Models
 @inject Blazored.SessionStorage.ISessionStorageService _storage
 @inject IBillingRepository _billrepo
+@inject NavigationManager _nav
 
 
 <MudDialogProvider FullWidth="true"
@@ -54,6 +55,7 @@
     {
         await _billrepo.UploadRequest(billreq);
         await ClosePopUp.InvokeAsync(false);
+        _nav.NavigateTo("/checkbills", forceLoad: true);
 
     }
 }

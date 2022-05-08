@@ -32,8 +32,8 @@
             <MudTable Items="waitings" T=BillingRequest Loading=loading>
                 <HeaderContent>
                     <MudTh>Lejárat</MudTh>
-                    <MudTh>Létrehozó</MudTh>
                     <MudTh>Létrehozva</MudTh>
+                    <MudTh>Létrehozó</MudTh>
                     <MudTh>Elfogadott</MudTh>
                     <MudTh>Fájl letöltése</MudTh>
                     <MudTh>Fájl feltöltés</MudTh>
@@ -42,8 +42,15 @@
                     <MudTd DataLabel="Lejárat">@context.DeadLine?.ToString("yyyy.MM.dd")</MudTd>
                     <MudTd DataLabel="Létrehozó">
                         @{
-                            var u = users.Where(w => w.UserId == context.UploaderId).FirstOrDefault();
-                            @u.UserName
+                            var u = " ";
+                            if (users != null && users.Count > 0)
+                            {
+                                if (users.Where(w => w.UserId == context.UploaderId).FirstOrDefault().UserName != null)
+                                    u = users?.Where(w => w.UserId == context.UploaderId).FirstOrDefault().UserName;
+
+                                @u
+                            }
+
                         }
                     </MudTd>
                     <MudTd DataLabel="Létrehozva">@context.CreateDate</MudTd>
@@ -57,6 +64,10 @@
                         {
                             var filename = "/" + context.FileName;
                             <MudTd DataLabel="Fájl letöltés"><a href="@filename" download="@context.FileName"><MudButton StartIcon=@Icons.Filled.Download></MudButton></a></MudTd>
+                        }
+                        else
+                        {
+                            <MudTd DataLabel="Fájl letöltés">Még nincs fájl</MudTd>
                         }
                         <MudTd DataLabel="Fájl feltöltés">
                             @{
@@ -89,7 +100,7 @@
                     <MudTd DataLabel="Lejárat">@context.DeadLine?.ToString("yyyy.MM.dd")</MudTd>
                     <MudTd DataLabel="Létrehozó">
                         @{
-                            var u = users.Where(w => w.Id == w.UserId).FirstOrDefault();
+                            var u = users?.Where(w => w.UserId == context.UploaderId).FirstOrDefault();
                             @u.UserName
                         }
                     </MudTd>
@@ -104,6 +115,10 @@
                         {
                             var filename = "/" + context.FileName;
                             <MudTd DataLabel="Fájl letöltés"><a href="@filename" download="@context.FileName"><MudButton StartIcon=@Icons.Filled.Download></MudButton></a></MudTd>
+                        }
+                        else
+                        {
+                            <MudTd DataLabel="Fájl letöltés">Még nincs fájl</MudTd>
                         }
                     }
                 </RowTemplate>
@@ -140,7 +155,7 @@ else if (!isownedPage && loggedId != 1)
                         }
                     </MudTd>
 
-                    <MudTd DataLabel="Törlés"><MudButton StartIcon=@Icons.Filled.Delete></MudButton></MudTd>
+                    <MudTd DataLabel="Törlés"><MudButton OnClick="@(() => Delete(context.Id))" StartIcon=@Icons.Filled.Delete></MudButton></MudTd>
 
                     @{
                         if (context.FileName != null)
@@ -148,6 +163,10 @@ else if (!isownedPage && loggedId != 1)
                             var filename = "/" + context.FileName;
                             <MudTd DataLabel="Fájl letöltés"><a href="@filename" download="@context.FileName"><MudButton StartIcon=@Icons.Filled.Download></MudButton></a></MudTd>
 
+                        }
+                        else
+                        {
+                            <MudTd DataLabel="Fájl letöltés">Még nincs fájl</MudTd>
                         }
                     }
                 </RowTemplate>
@@ -167,7 +186,7 @@ else if (!isownedPage && loggedId != 1)
                     <MudTd DataLabel="Lejárat">@context.DeadLine?.ToString("yyyy.MM.dd")</MudTd>
                     <MudTd DataLabel="Létrehozó">
                         @{
-                            var u = users.Where(w => w.Id == w.UserId).FirstOrDefault();
+                            var u = users.Where(w => w.UserId == context.UploaderId).FirstOrDefault();
                             @u.UserName
                         }
                     </MudTd>
@@ -182,6 +201,11 @@ else if (!isownedPage && loggedId != 1)
                         {
                             var filename = "/" + context.FileName;
                             <MudTd DataLabel="Fájl letöltés"><a href="@filename" download="@context.FileName"><MudButton StartIcon=@Icons.Filled.Download></MudButton></a></MudTd>
+
+                        }
+                        else
+                        {
+                            <MudTd DataLabel="Fájl letöltés">Még nincs fájl</MudTd>
                         }
                     }
                 </RowTemplate>
@@ -233,14 +257,14 @@ else if (!isownedPage && loggedId != 1)
     {
         loading = true;
         billreqs = await _billingrepo.GetBillsByUserId(userId);
+        users = await _userrepo.GetAllUserInfo();
 
         if (userId == await _storage.GetItemAsync<int>("id"))
         {
             isownedPage = true;
         }
-        SeparateBills();
-        users = await _userrepo.GetAllUserInfo();
         loggedId = await _storage.GetItemAsync<int>("id");
+        SeparateBills();
         loading = false;
     }
     //get request id for the file upload
@@ -252,6 +276,15 @@ else if (!isownedPage && loggedId != 1)
     void SeparateBills()
     {
         waitings = billreqs.Where(w => w.FileName == null || w.DeadLine > DateTime.Today && w.IsAccepted != true).ToList();
-        dones = billreqs.Where(w => w.FileName != null && w.DeadLine < DateTime.Today && w.IsAccepted == true).ToList();
+        dones = billreqs.Where(w => w.FileName != null && w.IsAccepted == true).ToList();
+    }
+    //delete bill
+    async Task Delete(int id)
+    {
+        var result = await _billingrepo.DeleteBill(id);
+        if (result)
+        {
+            _nav.NavigateTo("billing/" + userId, forceLoad: true);
+        }
     }
     }

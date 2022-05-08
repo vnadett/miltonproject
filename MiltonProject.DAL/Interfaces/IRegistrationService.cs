@@ -13,5 +13,6 @@ namespace MiltonProject.DAL.Interfaces
         Registration Registration(Registration model);
         bool UserNameOrEmailWasTaken(string email, string username);
         List<UserDetailsAndLogin> GetUsers();
+        bool ChangePassword(User model);
     }
 }

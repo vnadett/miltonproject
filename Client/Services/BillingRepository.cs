@@ -61,5 +61,19 @@ namespace miltonProject.Client.Services
             return null;
 
         }
+        public async Task<bool> DeleteBill(int id)
+        {
+
+            var request = new HttpRequestMessage(HttpMethod.Delete, Endpoints.DeleteBill + "?id=" + id);
+
+            HttpResponseMessage response = await _client.SendAsync(request);
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return true;
+            }
+            return false;
+
+        }
     }
 }

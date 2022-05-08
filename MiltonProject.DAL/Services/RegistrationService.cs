@@ -135,5 +135,22 @@ namespace MiltonProject.DAL.Services
                 return userDetailsList;
             }
         }
+        // change user password
+        public bool ChangePassword(User model)
+        {
+            ApplicationDbContext _db = new ApplicationDbContext(SetDatabase.dbContextOptionsBuilder());
+            using (_db)
+            {
+                var user = _db.User.Where(w => w.Id == model.Id).FirstOrDefault();
+                if (user != null)
+                {
+                    user.Password = BCrypt.Net.BCrypt.HashPassword(model.Password);
+                    _db.Update(user);
+                    _db.SaveChanges();
+                    return true;
+                }
+                return false;
+            }
+        }
     }
 }

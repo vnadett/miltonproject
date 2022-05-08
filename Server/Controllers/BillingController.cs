@@ -64,5 +64,15 @@ namespace miltonProject.Server.Controllers
             }
             catch (Exception ex) { return BadRequest(ex.ToString()); }
         }
+        [HttpDelete("DeleteBill")]
+        public async Task<ActionResult> Delete([FromQuery] int id)
+        {
+            try
+            {
+                var result = _db.DeleteBill(id);
+                return Ok(result);
+            }
+            catch (Exception ex) { return BadRequest(ex.ToString()); }
+        }
     }
 }

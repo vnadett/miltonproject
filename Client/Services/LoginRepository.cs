@@ -21,8 +21,12 @@ namespace miltonProject.Client.Services
             request.Content = new StringContent(JsonConvert.SerializeObject(obj), Encoding.UTF8, "application/json");
 
             HttpResponseMessage response = await _client.SendAsync(request);
-            var result = JsonConvert.DeserializeObject<Login>(await response.Content.ReadAsStringAsync());
-            return result;
+            try
+            {
+                var result = JsonConvert.DeserializeObject<Login>(await response.Content.ReadAsStringAsync());
+                return result;
+            }
+            catch (Exception ex) { return null; }
         }
     }
 }

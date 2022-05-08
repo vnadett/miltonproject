@@ -40,7 +40,7 @@
 </div>
 @if (failedAlert)
 {
-    <MudAlert Severity="Severity.Error" Variant="Variant.Filled" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(false))">Felhasználó hozzáadása sikertelen!</MudAlert>
+    <MudAlert Severity="Severity.Error" Variant="Variant.Filled" ContentAlignment="HorizontalAlignment.Center" ShowCloseIcon="true" CloseIconClicked="(() => CloseMe(false))">A felhasználónév vagy jelszó nem megfelelő!</MudAlert>
 }
 
 @code
@@ -55,7 +55,7 @@
     async Task LoginUser()
     {
         var getLoggedUser = await _loginRepo.LoginUser(sendLogin);
-        if (getLoggedUser.Success != null && getLoggedUser.Success == true)
+        if (getLoggedUser != null && getLoggedUser.Success != null && getLoggedUser.Success == true)
         {
             await _storage.SetItemAsync("id", getLoggedUser.Id);
             await _storage.SetItemAsync("username", getLoggedUser.UserName);

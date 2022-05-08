@@ -111,19 +111,15 @@
     async Task Search()
     {
         Users = await _userRepo.GetAllUserInfo();
-
-        if (searchModel != null && Users != null)
+        if (!string.IsNullOrEmpty(searchModel.FirstName))
         {
-            if (!string.IsNullOrEmpty(searchModel.FirstName))
-            {
-                Users = Users?.FindAll(f => f.FirstName.Contains(searchModel.FirstName)).ToList();
-            }
-            if (!string.IsNullOrEmpty(searchModel.LastName))
-            {
-                Users = Users?.FindAll(f => f.FirstName == searchModel.FirstName);
-            }
-            Users = Users?.FindAll(f => f.IsActive == searchModel.IsActive && f.IsBilling == searchModel.IsBilling);
+            Users = Users?.Where(w => w.FirstName != null && w.FirstName.ToLower().Contains(searchModel.FirstName.ToLower())).ToList();
         }
+        if (!string.IsNullOrEmpty(searchModel.LastName))
+        {
+            Users = Users?.Where(w => w.LastName != null && w.LastName.ToLower().Contains(searchModel.LastName.ToLower())).ToList();
+        }
+        Users = Users?.Where(w => w.IsActive == searchModel.IsActive && w.IsBilling == searchModel.IsBilling).ToList();
     }
     void OpenDialog(int userid, string username, string firstname, string lastname)
     {

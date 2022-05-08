@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MiltonProject.DAL.DTOs;
 using MiltonProject.DAL.Interfaces;
 using MiltonProject.DAL.Models;
+using System.Timers;
 
 namespace MiltonProject.DAL.Services
 {
@@ -92,6 +93,53 @@ namespace MiltonProject.DAL.Services
             {
                 var bills = _db.Billings.ToList();
                 return bills;
+            }
+        }
+
+        //delete bill
+        public bool DeleteBill(int id)
+        {
+            ApplicationDbContext _db = new ApplicationDbContext(SetDatabase.dbContextOptionsBuilder());
+            using (_db)
+            {
+                var bill = _db.Billings.Where(_w => _w.Id == id).FirstOrDefault();
+                if (bill != null)
+                    _db.Billings.Remove(bill);
+                _db.SaveChanges(true);
+                return true;
+            }
+        }
+
+        //send email to users if they have expiring bill request
+        public void ExpiringBillEmailSender()
+        {
+            const double interval = 15 * 1000;
+            System.Timers.Timer checkForTime = new System.Timers.Timer(interval);
+            checkForTime.Elapsed += new ElapsedEventHandler(checkForTime_Elapsed);
+            checkForTime.Enabled = true;
+        }
+        void checkForTime_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            ApplicationDbContext _db = new ApplicationDbContext(SetDatabase.dbContextOptionsBuilder());
+            IEmailService email = new EmailService();
+            string title = "Mai napon lejáró határidő!";
+            using (_db)
+            {
+                var bills = _db.Billings.Where(w => w.DeadLine == DateTime.Today).ToList();
+                var users = _db.User.ToList();
+                foreach (var bill in bills)
+                {
+                    foreach (var user in users)
+                    {
+                        if (bill.BillingUserId == user.Id)
+                        {
+                            string body = "Tisztelt Felhasználó!\n\n"
+                                + "A Milton Friedman Egyetem Számlázási rendszerében egy feltöltésre váró számlakérvénye van a mai határidővel." +
+                                "\n\n";
+                            email.EmailSender(user.Email, body, title);
+                        }
+                    }
+                }
             }
         }
     }
